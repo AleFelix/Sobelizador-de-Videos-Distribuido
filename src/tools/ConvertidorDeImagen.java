@@ -69,8 +69,13 @@ public class ConvertidorDeImagen {
 		}
 		return extension;
 	}
-
+	
 	public boolean convertirPixelesAImagen(double[][] pixelesSobelizados) {
+		return this.convertirPixelesAImagen(pixelesSobelizados, archivoImagen.getAbsolutePath());
+	}
+
+	public boolean convertirPixelesAImagen(double[][] pixelesSobelizados, String dirImagen) {
+		File nuevoArchivoImagen = new File(dirImagen);
 		int ancho = pixelesSobelizados.length;
 		int alto = pixelesSobelizados[0].length;
 		int magnitudEnRGB;
@@ -83,8 +88,8 @@ public class ConvertidorDeImagen {
 		    }
 		}
 		try {
-			System.out.println("Voy a escribir: " + archivoImagen.getParent() + "/" + NOMBRE_CARPETA_SOB + "/" + archivoImagen.getName() + ".SoB.png");
-			boolean trabajo = ImageIO.write(imagenSobelizada, "PNG", new File(archivoImagen.getParent() + "/" + NOMBRE_CARPETA_SOB + "/" + archivoImagen.getName() + ".SoB.png"));
+			System.out.println("Voy a escribir: " + nuevoArchivoImagen.getParent() + "/" + NOMBRE_CARPETA_SOB + "/" + nuevoArchivoImagen.getName() + ".SoB.png");
+			boolean trabajo = ImageIO.write(imagenSobelizada, "PNG", new File(nuevoArchivoImagen.getParent() + "/" + NOMBRE_CARPETA_SOB + "/" + nuevoArchivoImagen.getName() + ".SoB.png"));
 			if (!trabajo) {
 				System.out.println("No hizo nada");
 			}

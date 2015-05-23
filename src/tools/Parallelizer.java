@@ -46,7 +46,7 @@ public class Parallelizer<O> {
 			this.results = new ArrayList<Object>();
 			this.parameters = parameters;
 			parameterClasses = new Class[parameters[0].length];
-			for (int i = 0; i < parameters.length; i++) {
+			for (int i = 0; i < parameters[0].length; i++) {
 				parameterClasses[i] = getClassType(parameters[0][i].getClass());
 			}
 			numResults = 0;

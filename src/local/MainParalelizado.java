@@ -37,7 +37,7 @@ public class MainParalelizado {
 				do {} while(!v.finalizarVentana());
 				JOptionPane.showMessageDialog(null, "No se ha podido decodificar el video");
 			} else {
-				v.setMensaje("Video decodificado, sobelizando los fotogramas...");
+				v.setMensaje("Video decodificado, separando los fotogramas...");
 				String directorio = ddv.getDirFrames();
 				File[] frames = new File(directorio).listFiles(new FilenameFilter() {
 				    public boolean accept(File dir, String name) {
@@ -46,39 +46,43 @@ public class MainParalelizado {
 				ConvertidorDeImagen cdi = new ConvertidorDeImagen();
 				Sobelizador s = new Sobelizador();
 				List<double[][]> listaDePixeles = new ArrayList<double[][]>();
-				for (int i = 0; i < frames.length; i++) {
+				List<String> listaPathsImagenes = new ArrayList<String>();
+				for (int i = 0; i < 3; i++) {
 					if (frames[i].isFile()) {
+						listaPathsImagenes.add(frames[i].getAbsolutePath());
 						double[][] pixeles = cdi.convertirImagenAPixeles(frames[i].getAbsolutePath());
 						if (pixeles == null) {
-							v.setMensaje("Hubo un error al leer una imagen, continua la sobelizacion...");
+							v.setMensaje("Hubo un error al leer una imagen, continua la separación...");
 						} else {
 							listaDePixeles.add(pixeles);
 						}
 					}
 				}
+				v.setMensaje("Video separado en frames, sobelizando los fotogramas...");
 				Parallelizer<Sobelizador> p = new Parallelizer<Sobelizador>();
 				Object[][] pixelesASobelizar = new Object[listaDePixeles.size()][1];
 				for (int i=0; i<listaDePixeles.size(); i++) {
 					pixelesASobelizar[i][0] = listaDePixeles.get(i);
 				}
 				List<Object> listaDePixelesSobelizados = p.paraTasks(Sobelizador.class, s, "sobelizar", pixelesASobelizar, listaDePixeles.size());
+				v.setMensaje("Finalizada la sobelización, comienza el guardado de las imagenes sobelizadas...");
 				for (int i=0; i<listaDePixelesSobelizados.size(); i++) {
 					double[][] pixelesSobelizados = (double[][]) listaDePixelesSobelizados.get(i);
-					if (!cdi.convertirPixelesAImagen(pixelesSobelizados)) {
-						v.setMensaje("Hubo un error al convertir una imagen, continua la sobelizacion...");
+					if (!cdi.convertirPixelesAImagen(pixelesSobelizados,listaPathsImagenes.get(i))) {
+						v.setMensaje("Hubo un error al convertir una imagen, continua el guardado...");
 					}
 				}
-				ddv.borrarFrames();
-				cdi.borrarDirByN();
-				v.setMensaje("Finalizada la sobelizacion, comienza la codificacion del video...");
+//				ddv.borrarFrames();
+//				cdi.borrarDirByN();
+				v.setMensaje("Finalizado el guardado, comienza la codificacion del video...");
 				CodificadorDeVideo cdv = new CodificadorDeVideo();
 				if (!cdv.codificarVideo(cdi.getDirSob(),selectedFile.getParent(),selectedFile.getName(),ddv.getFrameRate())) {
 					do {} while(!v.finalizarVentana());
 					JOptionPane.showMessageDialog(null, "Hubo un fallo en la codificaci�n del video");
 				} else {
-					cdi.borrarFramesSob();
-					cdi.borrarDirSob();
-					ddv.borrarDirFrames();
+//					cdi.borrarFramesSob();
+//					cdi.borrarDirSob();
+//					ddv.borrarDirFrames();
 					do {} while(!v.finalizarVentana());
 					JOptionPane.showMessageDialog(null, "Proceso finalizado exitosamente");
 				}
