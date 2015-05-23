@@ -1,5 +1,7 @@
 package local;
 
+import java.util.Arrays;
+
 import tools.Parallelizer;
 
 public class TestWork {
@@ -21,7 +23,7 @@ public class TestWork {
 			duracionS = (fin - inicio) / 1000;
 			System.out.println("Secuencial tardo " + duracionS + " segundos");
 			inicio = System.currentTimeMillis();
-			System.out.println(p.paraTasks(TestWork.class, t, "fractal", new Object[][] {{ 0, 0, 25.0, 23 },{ 0, 0, 25.0, 24 },{ 0, 0, 25.0, 23 },{ 0, 0, 25.0, 24 },{ 0, 0, 25.0, 24 }},5));
+			System.out.println(Arrays.toString(p.paraTasks(TestWork.class, t, "fractal", new Object[][] {{ 0, 0, 25.0, 23 },{ 0, 0, 25.0, 24 },{ 0, 0, 25.0, 23 },{ 0, 0, 25.0, 24 },{ 0, 0, 25.0, 24 }},5)));
 			fin = System.currentTimeMillis();
 			duracionP = (fin - inicio) / 1000;
 			System.out.println("Paralelo tardo " + duracionP + " segundos");

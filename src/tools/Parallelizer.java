@@ -2,26 +2,22 @@ package tools;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 
 public class Parallelizer<O> {
 
-	@SuppressWarnings("unchecked")
-	public List<Object> paraCores(Class<O> classType, O object, String methodName, Object[][] parameters) {
+	public Object[] paraCores(Class<O> classType, O object, String methodName, Object[][] parameters) {
 		ParallelTask<O> parallelTask = new ParallelTask<O>(classType, object, methodName, parameters);
 		ForkJoinPool pool = new ForkJoinPool();
-		return (List<Object>) pool.invoke(parallelTask);
+		return (Object[]) pool.invoke(parallelTask);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Object> paraTasks(Class<O> classType, O object, String methodName, Object[][] parameters, int numTasks) {
+	public Object[] paraTasks(Class<O> classType, O object, String methodName, Object[][] parameters, int numTasks) {
 		ParallelTask<O> parallelTask = new ParallelTask<O>(classType, object, methodName, parameters, numTasks);
 		ForkJoinPool pool = new ForkJoinPool();
-		return (List<Object>) pool.invoke(parallelTask);
+		return (Object[]) pool.invoke(parallelTask);
 	}
 
 	private class ParallelTask<E> extends RecursiveTask<Object> {
@@ -34,7 +30,7 @@ public class Parallelizer<O> {
 		private Object[][] parameters;
 		@SuppressWarnings("rawtypes")
 		private Class[] parameterClasses;
-		private List<Object> results;
+		private Object[] results;
 		private Integer numResults;
 		private int numCores;
 		private Boolean error;
@@ -45,7 +41,6 @@ public class Parallelizer<O> {
 			this.object = object;
 			this.methodName = methodName;
 			this.classType = classType;
-			this.results = new ArrayList<Object>();
 			this.parameters = parameters;
 			parameterClasses = new Class[parameters[0].length];
 			for (int i = 0; i < parameters[0].length; i++) {
@@ -56,12 +51,14 @@ public class Parallelizer<O> {
 			error = false;
 			numForks = 0;
 			numTasks = numCores;
+			this.results = new Object[numTasks];
 		}
 
 		public ParallelTask(Class<E> classType, E object, String methodName, Object[][] parameters, int numTasks) {
 			this(classType, object, methodName, parameters);
 			if (numTasks > 0) {
 				this.numTasks = numTasks;
+				this.results = new Object[numTasks];
 			}
 		}
 
@@ -73,7 +70,7 @@ public class Parallelizer<O> {
 					result = m.invoke(object, parameters[forkNumber]);
 					synchronized (results) {
 						synchronized (numResults) {
-							results.add(result);
+							results[forkNumber] = result;
 							numResults++;
 						}
 					}
@@ -87,7 +84,7 @@ public class Parallelizer<O> {
 		}
 
 		@Override
-		public List<Object> compute() {
+		public Object[] compute() {
 			int forkNumber;
 			synchronized (numForks) {
 				forkNumber = numForks;

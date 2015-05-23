@@ -58,7 +58,7 @@ public class MainParalelizado {
 				double[][] pixeles, pixelesSobelizados;
 				Object[][] pixelesASobelizar;
 				Parallelizer<Sobelizador> p;
-				List<Object> listaDePixelesSobelizados;
+				Object[] listaDePixelesSobelizados;
 				while (indiceFrame < frames.length) {
 					while (subIndice < topSubindice && indiceFrame < frames.length) {
 						if (frames[indiceFrame].isFile()) {
@@ -85,8 +85,8 @@ public class MainParalelizado {
 						}
 						listaDePixelesSobelizados = p.paraTasks(Sobelizador.class, s, "sobelizar", pixelesASobelizar, listaDePixeles.size());
 						System.out.println("Sobelizacion Hecha");
-						for (int i = 0; i < listaDePixelesSobelizados.size(); i++) {
-							pixelesSobelizados = (double[][]) listaDePixelesSobelizados.get(i);
+						for (int i = 0; i < listaDePixelesSobelizados.length; i++) {
+							pixelesSobelizados = (double[][]) listaDePixelesSobelizados[i];
 							if (!cdi.convertirPixelesAImagen(pixelesSobelizados, listaPathsImagenes.get(indiceLista))) {
 								v.setMensaje("Hubo un error al convertir una imagen, continua el guardado...");
 							}
