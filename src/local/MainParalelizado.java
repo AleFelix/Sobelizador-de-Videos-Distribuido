@@ -96,8 +96,8 @@ public class MainParalelizado {
 					}
 					subIndice = 0;
 				}
-				// ddv.borrarFrames();
-				// cdi.borrarDirByN();
+				 ddv.borrarFrames();
+				 cdi.borrarDirByN();
 				v.setMensaje("Finalizado el guardado, comienza la codificacion del video...");
 				CodificadorDeVideo cdv = new CodificadorDeVideo();
 				if (!cdv.codificarVideo(cdi.getDirSob(), selectedFile.getParent(), selectedFile.getName(), ddv.getFrameRate())) {
@@ -105,9 +105,9 @@ public class MainParalelizado {
 					} while (!v.finalizarVentana());
 					JOptionPane.showMessageDialog(null, "Hubo un fallo en la codificaci�n del video");
 				} else {
-					// cdi.borrarFramesSob();
-					// cdi.borrarDirSob();
-					// ddv.borrarDirFrames();
+					cdi.borrarFramesSob();
+					cdi.borrarDirSob();
+					ddv.borrarDirFrames();
 					do {
 					} while (!v.finalizarVentana());
 					JOptionPane.showMessageDialog(null, "Proceso finalizado exitosamente");
