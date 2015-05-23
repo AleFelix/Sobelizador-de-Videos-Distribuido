@@ -1,9 +1,11 @@
 package tools;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 
 public class Parallelizer<O> {
@@ -91,12 +93,16 @@ public class Parallelizer<O> {
 				forkNumber = numForks;
 				numForks++;
 			}
-			this.fork();
-			if (forkNumber < numTasks) {
+			System.out.println("Soy el proceso: " + forkNumber);
+			if (forkNumber < numTasks - 1) {
+				ForkJoinTask<Object> child = this.fork();
 				this.execute(forkNumber);
 				System.out.println("Fork N." + forkNumber + " finalizing");
+				child.join();
+			} else if (forkNumber == numTasks - 1) {
+				this.execute(forkNumber);
 			}
-			while (numResults < numTasks && !error);
+			System.out.println("Termino el proceso: " + forkNumber);
 			if (error) {
 				return null;
 			} else {

@@ -3,6 +3,7 @@ package local;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -30,60 +31,85 @@ public class MainParalelizado {
 		int resultado = fileChooser.showOpenDialog(null);
 		if (resultado == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
-			Ventana v = new Ventana("Sobelizador","Iniciando la decodificación del video...");
+			Ventana v = new Ventana("Sobelizador", "Iniciando la decodificación del video...");
 			new Thread(v).start();
 			DecodificadorDeVideo ddv = new DecodificadorDeVideo(true);
 			if (!ddv.decodificarVideo(selectedFile.getAbsolutePath())) {
-				do {} while(!v.finalizarVentana());
+				do {
+				} while (!v.finalizarVentana());
 				JOptionPane.showMessageDialog(null, "No se ha podido decodificar el video");
 			} else {
-				v.setMensaje("Video decodificado, separando los fotogramas...");
+				v.setMensaje("Video decodificado, separando y sobelizando los fotogramas...");
 				String directorio = ddv.getDirFrames();
 				File[] frames = new File(directorio).listFiles(new FilenameFilter() {
-				    public boolean accept(File dir, String name) {
-				        return name.toLowerCase().endsWith(".png");
-				    }});
-				ConvertidorDeImagen cdi = new ConvertidorDeImagen();
+					public boolean accept(File dir, String name) {
+						return name.toLowerCase().endsWith(".png");
+					}
+				});
+				Arrays.sort(frames);
+				ConvertidorDeImagen cdi = null;
 				Sobelizador s = new Sobelizador();
 				List<double[][]> listaDePixeles = new ArrayList<double[][]>();
 				List<String> listaPathsImagenes = new ArrayList<String>();
-				for (int i = 0; i < 3; i++) {
-					if (frames[i].isFile()) {
-						listaPathsImagenes.add(frames[i].getAbsolutePath());
-						double[][] pixeles = cdi.convertirImagenAPixeles(frames[i].getAbsolutePath());
-						if (pixeles == null) {
-							v.setMensaje("Hubo un error al leer una imagen, continua la separación...");
-						} else {
-							listaDePixeles.add(pixeles);
+				int indiceFrame = 0;
+				int subIndice = 0;
+				int indiceLista = 0;
+				int topSubindice = 10;
+				double[][] pixeles, pixelesSobelizados;
+				Object[][] pixelesASobelizar;
+				Parallelizer<Sobelizador> p;
+				List<Object> listaDePixelesSobelizados;
+				while (indiceFrame < frames.length) {
+					while (subIndice < topSubindice && indiceFrame < frames.length) {
+						if (frames[indiceFrame].isFile()) {
+							listaPathsImagenes.add(frames[indiceFrame].getAbsolutePath());
+							System.out.println("INDICEFRAME: "+indiceFrame);
+							cdi = new ConvertidorDeImagen();
+							pixeles = cdi.convertirImagenAPixeles(frames[indiceFrame].getAbsolutePath());
+							if (pixeles == null) {
+								v.setMensaje("Hubo un error al leer una imagen, continua la sobelización...");
+							} else {
+								listaDePixeles.add(pixeles);
+							}
 						}
+						indiceFrame++;
+						subIndice++;
 					}
-				}
-				v.setMensaje("Video separado en frames, sobelizando los fotogramas...");
-				Parallelizer<Sobelizador> p = new Parallelizer<Sobelizador>();
-				Object[][] pixelesASobelizar = new Object[listaDePixeles.size()][1];
-				for (int i=0; i<listaDePixeles.size(); i++) {
-					pixelesASobelizar[i][0] = listaDePixeles.get(i);
-				}
-				List<Object> listaDePixelesSobelizados = p.paraTasks(Sobelizador.class, s, "sobelizar", pixelesASobelizar, listaDePixeles.size());
-				v.setMensaje("Finalizada la sobelización, comienza el guardado de las imagenes sobelizadas...");
-				for (int i=0; i<listaDePixelesSobelizados.size(); i++) {
-					double[][] pixelesSobelizados = (double[][]) listaDePixelesSobelizados.get(i);
-					if (!cdi.convertirPixelesAImagen(pixelesSobelizados,listaPathsImagenes.get(i))) {
-						v.setMensaje("Hubo un error al convertir una imagen, continua el guardado...");
+					if (listaDePixeles.size() > 0) {
+						p = new Parallelizer<Sobelizador>();
+						pixelesASobelizar = new Object[listaDePixeles.size()][1];
+						System.out.println("Tamaño de la lista de pixeles: " + listaDePixeles.size());
+						for (int i = 0; i < listaDePixeles.size(); i++) {
+							pixelesASobelizar[i][0] = listaDePixeles.get(i);
+							System.out.println("Añadido uno al paralelizador");
+						}
+						listaDePixelesSobelizados = p.paraTasks(Sobelizador.class, s, "sobelizar", pixelesASobelizar, listaDePixeles.size());
+						System.out.println("Sobelizacion Hecha");
+						for (int i = 0; i < listaDePixelesSobelizados.size(); i++) {
+							pixelesSobelizados = (double[][]) listaDePixelesSobelizados.get(i);
+							if (!cdi.convertirPixelesAImagen(pixelesSobelizados, listaPathsImagenes.get(indiceLista))) {
+								v.setMensaje("Hubo un error al convertir una imagen, continua el guardado...");
+							}
+							indiceLista++;
+						}
+						listaDePixeles = new ArrayList<double[][]>();
 					}
+					subIndice = 0;
 				}
-//				ddv.borrarFrames();
-//				cdi.borrarDirByN();
+				// ddv.borrarFrames();
+				// cdi.borrarDirByN();
 				v.setMensaje("Finalizado el guardado, comienza la codificacion del video...");
 				CodificadorDeVideo cdv = new CodificadorDeVideo();
-				if (!cdv.codificarVideo(cdi.getDirSob(),selectedFile.getParent(),selectedFile.getName(),ddv.getFrameRate())) {
-					do {} while(!v.finalizarVentana());
+				if (!cdv.codificarVideo(cdi.getDirSob(), selectedFile.getParent(), selectedFile.getName(), ddv.getFrameRate())) {
+					do {
+					} while (!v.finalizarVentana());
 					JOptionPane.showMessageDialog(null, "Hubo un fallo en la codificaci�n del video");
 				} else {
-//					cdi.borrarFramesSob();
-//					cdi.borrarDirSob();
-//					ddv.borrarDirFrames();
-					do {} while(!v.finalizarVentana());
+					// cdi.borrarFramesSob();
+					// cdi.borrarDirSob();
+					// ddv.borrarDirFrames();
+					do {
+					} while (!v.finalizarVentana());
 					JOptionPane.showMessageDialog(null, "Proceso finalizado exitosamente");
 				}
 			}
