@@ -46,7 +46,7 @@ public class Parallelizer<O> {
 			this.results = new ArrayList<Object>();
 			this.parameters = parameters;
 			parameterClasses = new Class[parameters.length];
-			for (int i=0; i<parameters.length; i++) {
+			for (int i = 0; i < parameters.length; i++) {
 				parameterClasses[i] = parameters[i].getClass();
 			}
 			numResults = 0;
@@ -70,10 +70,8 @@ public class Parallelizer<O> {
 				result = m.invoke(object, parameters);
 				synchronized (results) {
 					synchronized (numResults) {
-						if (numResults < numTasks) {
-							results.add(result);
-							numResults++;
-						}
+						results.add(result);
+						numResults++;
 					}
 				}
 			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -94,8 +92,7 @@ public class Parallelizer<O> {
 			this.fork();
 			if (forkNumber < numTasks) {
 				this.execute();
-				System.out.println("Fork N°" + forkNumber + " Joining");
-				this.join();
+				System.out.println("Fork N." + forkNumber + " finalizing");
 			}
 			while (numResults < numTasks && !error);
 			if (error) {
