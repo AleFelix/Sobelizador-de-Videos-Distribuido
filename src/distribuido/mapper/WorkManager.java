@@ -15,7 +15,7 @@ public class WorkManager implements Runnable {
 	@Override
 	public void run() {
 		while (mapper.getListaPedazosVideo().size() > 0) {
-			if (indice > mapper.getWorkers().size()) {
+			if (indice >= mapper.getWorkers().size()) {
 				indice = 0;
 			}
 			try {

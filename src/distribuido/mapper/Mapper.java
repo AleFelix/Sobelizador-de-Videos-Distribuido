@@ -14,6 +14,7 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import tools.BorradorDeCarpetas;
 import tools.CodificadorDeVideo;
 import tools.DivisorDeVideoMejorado;
 import distribuido.archivo.Archivo;
@@ -66,6 +67,12 @@ public class Mapper implements IMapper {
 		if (cantidadDePedazosProcesados == cantidadDePedazos) {
 			CodificadorDeVideo cdv = new CodificadorDeVideo();
 			cdv.codificarVideo(carpetaFrames.getAbsolutePath(), carpetaVideoFinal.getAbsolutePath(), PREFIJO_VIDEO_FINAL + nombreVideo, frameRate);
+			try {
+				BorradorDeCarpetas.borrarContenido(carpetaFrames);
+				BorradorDeCarpetas.borrarContenido(carpetaVideoFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -181,11 +188,11 @@ public class Mapper implements IMapper {
 		return true;
 	}
 
-	public ArrayList<IWorker> getWorkers() {
+	public synchronized ArrayList<IWorker> getWorkers() {
 		return workers;
 	}
 
-	public ArrayList<IArchivo> getListaPedazosVideo() {
+	public synchronized ArrayList<IArchivo> getListaPedazosVideo() {
 		return listaPedazosVideo;
 	}
 

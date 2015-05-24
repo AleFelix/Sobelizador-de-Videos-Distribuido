@@ -63,7 +63,7 @@ public class MainParalelizado {
 					while (subIndice < topSubindice && indiceFrame < frames.length) {
 						if (frames[indiceFrame].isFile()) {
 							listaPathsImagenes.add(frames[indiceFrame].getAbsolutePath());
-							System.out.println("INDICEFRAME: "+indiceFrame);
+							System.out.println("INDICEFRAME: " + indiceFrame);
 							cdi = new ConvertidorDeImagen();
 							pixeles = cdi.convertirImagenAPixeles(frames[indiceFrame].getAbsolutePath());
 							if (pixeles == null) {
@@ -96,8 +96,8 @@ public class MainParalelizado {
 					}
 					subIndice = 0;
 				}
-				 ddv.borrarFrames();
-				 cdi.borrarDirByN();
+				ddv.borrarFrames();
+				cdi.borrarDirByN();
 				v.setMensaje("Finalizado el guardado, comienza la codificacion del video...");
 				CodificadorDeVideo cdv = new CodificadorDeVideo();
 				if (!cdv.codificarVideo(cdi.getDirSob(), selectedFile.getParent(), selectedFile.getName(), ddv.getFrameRate())) {

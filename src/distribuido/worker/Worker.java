@@ -49,14 +49,15 @@ public class Worker implements IWorker {
 	}
 
 	@Override
-	public void cargarVideo(IArchivo video) throws RemoteException {
+	public synchronized void cargarVideo(IArchivo video) throws RemoteException {
 		disponible = false;
-		WorkHandler wh = new WorkHandler(this, video);
+		WorkHandlerParalelo wh = new WorkHandlerParalelo(this, video);
 		new Thread(wh).start();
 	}
 
 	public void enviarTrabajo(ArrayList<IArchivo> framesSobelizados) {
 		try {
+			System.out.println("Enviando trabajo");
 			imap.devolverFrames(framesSobelizados);
 			disponible = true;
 		} catch (RemoteException e) {
@@ -65,7 +66,7 @@ public class Worker implements IWorker {
 	}
 
 	@Override
-	public boolean estaDisponible() throws RemoteException {
+	public synchronized boolean estaDisponible() throws RemoteException {
 		return disponible;
 	}
 	
