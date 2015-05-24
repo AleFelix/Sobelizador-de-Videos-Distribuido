@@ -5,6 +5,11 @@ public class Sobelizador {
 	private static final double[][] MATRIZ_X =  {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
 	private static final double[][] MATRIZ_Y =  {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}};
 	
+	/**
+	 * Sobeliza una matriz de pixeles
+	 * @param pixeles Matriz de pixeles sin sobelizar
+	 * @return Matriz de pixeles sobelizados
+	 */
 	public double[][] sobelizar(double[][] pixeles) {
 		double pixelX, pixelY, valorFinal;
 		double[][] pixelesSobelizados = new double[pixeles.length-2][pixeles[0].length-2];

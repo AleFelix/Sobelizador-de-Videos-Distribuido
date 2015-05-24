@@ -35,18 +35,33 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 		coddv.dividirVideo("/home/ale/Videos-SOB/Videos-02", "Tetris.mp4");
 	}
 	
+	/**
+	 * Devuelve el framerate del video
+	 * @return El framerate del video
+	 */
 	public int getFramerate() {
 		return frameRate;
 	}
 
+	/**
+	 * Devuelve la cantidad de piezas en las que se dividio el video
+	 * @return La cantidad de partes del video
+	 */
 	public long getCantPiezas() {
 		return cantPiezas;
 	}
 	
+	/**
+	 * Devuelve el directorio que contiene las piezas del video
+	 * @return La url de la carpeta con las piezas del video
+	 */
 	public String getDirPiezas() {
 		return dirPiezas;
 	}
 
+	/**
+	 * Usado internamente para obtener la duracion del video y la cantidad de piezas
+	 */
 	private void establecerCantidades() {
 		IMediaReader r = ToolFactory.makeReader(dirCompletaArchivo);
 		r.readPacket();
@@ -60,6 +75,11 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 		r.close();
 	}
 
+	/**
+	 * Divide al video en distintas piezas mas pequeñas
+	 * @param dirArchivo URL del directorio del video
+	 * @param nombreArchivo Nombre del video
+	 */
 	public void dividirVideo(String directorioArchivo, String nombreArchivo) {
 		dirCompletaArchivo = directorioArchivo + "/" + nombreArchivo;
 		this.nombreArchivo = nombreArchivo;
@@ -79,6 +99,10 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 		writer.close();
 	}
 
+	/**
+	 * Usado internamente para dividir el video
+	 * @param event Evento recibido
+	 */
 	@Override
 	public void onVideoPicture(IVideoPictureEvent event) {
 		IVideoPicture imagen = event.getPicture();

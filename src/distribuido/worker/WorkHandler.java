@@ -58,7 +58,9 @@ public class WorkHandler implements Runnable {
 					pixeles = s.sobelizar(pixeles);
 					cdi.convertirPixelesAImagen(pixeles);
 				}
-				File directorioFramesSobelizados = new File(cdi.getDirSob());
+				System.out.println("DIRFRAMES: " + ddv.getDirFrames());
+				System.out.println("DIRSOB: " + ConvertidorDeImagen.getDirSob(ddv.getDirFrames()));
+				File directorioFramesSobelizados = new File(ConvertidorDeImagen.getDirSob(ddv.getDirFrames()));
 				File[] framesSobelizados = directorioFramesSobelizados.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String name) {
 						return name.toLowerCase().endsWith(".png");

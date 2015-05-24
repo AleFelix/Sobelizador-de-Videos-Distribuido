@@ -93,7 +93,7 @@ public class WorkHandlerParalelo implements Runnable {
 					}
 					subIndice = 0;
 				}
-				File directorioFramesSobelizados = new File(cdi.getDirSob());
+				File directorioFramesSobelizados = new File(ConvertidorDeImagen.getDirSob(ddv.getDirFrames()));
 				File[] framesSobelizados = directorioFramesSobelizados.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String name) {
 						return name.toLowerCase().endsWith(".png");

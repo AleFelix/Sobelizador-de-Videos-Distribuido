@@ -15,6 +15,11 @@ public class ConvertidorDeImagen {
 	public static final String NOMBRE_CARPETA_SOB = "SoB";
 	private File archivoImagen;
 
+	/**
+	 * Convierte una imagen almacenada en el disco en una matriz de pixeles
+	 * @param dirImagen URL de la imagen a convertir
+	 * @return La matriz de pixeles
+	 */
 	public double[][] convertirImagenAPixeles(String dirImagen) {
 		try {
 			archivoImagen = new File(dirImagen);
@@ -42,10 +47,31 @@ public class ConvertidorDeImagen {
 		}
 	}
 	
+	/**
+	 * Devuelve la URL del directorio de imagenes sobelizadas a partir de la URL pasada como parametro
+	 * @param dirPadre La URL del directorio padre
+	 * @return La URL del directorio de imagenes sobelizadas
+	 */
+	public static String getDirSob(String dirPadre) {
+		File carpetaPadre = new File(dirPadre);
+		if (!carpetaPadre.isDirectory()) {
+			return null;
+		} else {
+			return carpetaPadre.getAbsolutePath() + "/" + NOMBRE_CARPETA_SOB;
+		}
+	}
+	
+	/**
+	 * Devuelve el directorio donde se almacenan las imagenes sobelizadas
+	 * @return URL del directorio de imagenes sobelizadas
+	 */
 	public String getDirSob() {
 		return archivoImagen.getParent() + "/" + NOMBRE_CARPETA_SOB;
 	}
 	
+	/**
+	 * Borra las imagenes en el directorio de imagenes sobelizadas
+	 */
 	public void borrarFramesSob() {
 		File[] imagenes = new File(archivoImagen.getParent() + "/" + NOMBRE_CARPETA_SOB).listFiles();
 		for (File imagen : imagenes) {
@@ -53,10 +79,18 @@ public class ConvertidorDeImagen {
 		}
 	}
 	
+	/**
+	 * Borra el directorio donde se almacenan las imagenes sobelizadas
+	 * @return true si pudo borrarlo, sino false
+	 */
 	public boolean borrarDirSob() {
 		return new File(archivoImagen.getParent() + "/" + NOMBRE_CARPETA_SOB).delete();
 	}
 	
+	/**
+	 * Borra el directorio donde se almacenan las imagenes en blanco y negro
+	 * @return true si pudo borrarlo, sino false
+	 */
 	public boolean borrarDirByN() {
 		return new File(archivoImagen.getParent() + "/" + NOMBRE_CARPETA_BYN).delete();
 	}
@@ -70,10 +104,22 @@ public class ConvertidorDeImagen {
 		return extension;
 	}
 	
+	/**
+	 * Convierte una matriz de pixeles sobelizados en una imagen almacenada en el directorio de sobelizacion,
+	 * genera el nombre a partir de una imagen cargada previamente
+	 * @param pixelesSobelizados Matriz de pixeles que fueron previamente sobelizados
+	 * @return true si pudo crear la imagen, sino false
+	 */
 	public boolean convertirPixelesAImagen(double[][] pixelesSobelizados) {
 		return this.convertirPixelesAImagen(pixelesSobelizados, archivoImagen.getAbsolutePath());
 	}
 
+	/**
+	 * Convierte una matriz de pixeles sobelizados en una imagen almacenada en el directorio de sobelizacion
+	 * @param pixelesSobelizados Matriz de pixeles que fueron previamente sobelizados
+	 * @param dirImagen URL de la imagen original sin sobelizar
+	 * @return true si pudo crear la imagen, sino false
+	 */
 	public boolean convertirPixelesAImagen(double[][] pixelesSobelizados, String dirImagen) {
 		File nuevoArchivoImagen = new File(dirImagen);
 		int ancho = pixelesSobelizados.length;

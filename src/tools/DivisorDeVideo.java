@@ -31,10 +31,17 @@ public class DivisorDeVideo extends MediaToolAdapter {
 		ddv.dividirVideo("/home/ale/Videos-SOB/Videos-02", "Sample.mp4");
 	}
 	
+	/**
+	 * Devuelve la cantidad de piezas en las que se dividio el video
+	 * @return La cantidad de partes del video
+	 */
 	public long getCantPiezas() {
 		return cantPiezas;
 	}
 	
+	/**
+	 * Usado internamente para obtener la duracion del video y la cantidad de piezas
+	 */
 	private void establecerCantidades() {
 		IMediaReader r = ToolFactory.makeReader(dirCompletaArchivo);
 		r.readPacket();
@@ -46,6 +53,11 @@ public class DivisorDeVideo extends MediaToolAdapter {
 		r.close();
 	}
 
+	/**
+	 * Divide al video en distintas piezas mas pequeñas
+	 * @param dirArchivo URL del directorio del video
+	 * @param nombreArchivo Nombre del video
+	 */
 	public void dividirVideo(String dirArchivo, String nombreArchivo) {
 		dirCompletaArchivo = dirArchivo + "/" + nombreArchivo;
 		this.nombreArchivo = nombreArchivo;
@@ -66,6 +78,10 @@ public class DivisorDeVideo extends MediaToolAdapter {
 		}
 	}
 	
+	/**
+	 * Usado internamente para dividir el video
+	 * @param event Evento recibido
+	 */
 	@Override
 	public void onVideoPicture(IVideoPictureEvent event) {
 		super.onVideoPicture(event);

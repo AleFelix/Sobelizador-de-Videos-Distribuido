@@ -27,6 +27,14 @@ public class CodificadorDeVideo {
 		cdv.codificarVideo(directorioFrames, directorioSalida, nombreVideo, 30);
 	}
 
+	/**
+	 * Metodo utilizado para convertir un conjunto de imagenes en un video
+	 * @param directorioFrames URL de la carpeta donde estan los fotogramas
+	 * @param directorioSalida URL de la carpeta donde se guardara el video resultante
+	 * @param nombreVideo Nombre del nuevo video
+	 * @param frameRate FrameRate del nuevo video
+	 * @return true si el video se creo correctamente, sino false
+	 */
 	public boolean codificarVideo(String directorioFrames, String directorioSalida, String nombreVideo, double frameRate) {
 		this.frameRate = frameRate;
 		milisegundosEntreFrames = Math.ceil((1/frameRate)*1000);

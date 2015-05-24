@@ -8,12 +8,29 @@ import java.util.concurrent.RecursiveTask;
 
 public class Parallelizer<O> {
 
+	/**
+	 * Paraleliza un metodo de una clase para que se ejecute tantas veces como nucleos disponibles tenga el sistema
+	 * @param classType La clase del objeto del metodo a paralelizar
+	 * @param object El objeto que contiene el metodo a paralelizar
+	 * @param methodName El nombre del metodo a paralelizar
+	 * @param parameters Los parametros para cada ejecucion del metodo
+	 * @return La salida correspondiente a cada ejecucion del metodo, con el mismo orden que los parametros de entrada
+	 */
 	public Object[] paraCores(Class<O> classType, O object, String methodName, Object[][] parameters) {
 		ParallelTask<O> parallelTask = new ParallelTask<O>(classType, object, methodName, parameters);
 		ForkJoinPool pool = new ForkJoinPool();
 		return (Object[]) pool.invoke(parallelTask);
 	}
 
+	/**
+	 * Paraleliza un metodo de una clase para que se ejecute tantas veces como se desee
+	 * @param classType La clase del objeto del metodo a paralelizar
+	 * @param object El objeto que contiene el metodo a paralelizar
+	 * @param methodName El nombre del metodo a paralelizar
+	 * @param parameters Los parametros para cada ejecucion del metodo
+	 * @param numTasks Cantidad de ejecuciones deseadas
+	 * @return La salida correspondiente a cada ejecucion del metodo, con el mismo orden que los parametros de entrada
+	 */
 	public Object[] paraTasks(Class<O> classType, O object, String methodName, Object[][] parameters, int numTasks) {
 		ParallelTask<O> parallelTask = new ParallelTask<O>(classType, object, methodName, parameters, numTasks);
 		ForkJoinPool pool = new ForkJoinPool();
