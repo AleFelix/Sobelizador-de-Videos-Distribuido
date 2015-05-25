@@ -86,7 +86,7 @@ public class DivisorDeVideo extends MediaToolAdapter {
 	public void onVideoPicture(IVideoPictureEvent event) {
 		super.onVideoPicture(event);
 		timeEvento = event.getTimeStamp(TimeUnit.MILLISECONDS);
-		tiempoPiezaActual = timeEvento - timeUltimoCorte ;
+		tiempoPiezaActual = timeEvento - timeUltimoCorte;
 		System.out.println(tiempoPiezaActual);
 		if (tiempoPiezaActual >= DURACION_MILISEG_PIEZA) {
 			timeUltimoCorte = timeEvento;

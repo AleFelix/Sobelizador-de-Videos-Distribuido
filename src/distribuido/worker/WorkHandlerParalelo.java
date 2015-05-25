@@ -86,7 +86,11 @@ public class WorkHandlerParalelo implements Runnable {
 						System.out.println("Sobelizacion Hecha");
 						for (int i = 0; i < listaDePixelesSobelizados.length; i++) {
 							pixelesSobelizados = (double[][]) listaDePixelesSobelizados[i];
-							cdi.convertirPixelesAImagen(pixelesSobelizados, listaPathsImagenes.get(indiceLista));
+							if (pixelesSobelizados != null) {
+								cdi.convertirPixelesAImagen(pixelesSobelizados, listaPathsImagenes.get(indiceLista));
+							} else {
+								System.out.println("------------------------ES NULO---------------------------");
+							}
 							indiceLista++;
 						}
 						listaDePixeles = new ArrayList<double[][]>();

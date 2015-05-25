@@ -15,6 +15,7 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 
 	public static final long MICROSEG_EN_UN_MILISEG = 1000;
 	public static final long DURACION_MILISEG_PIEZA = 2000;
+	public static final String PADDING_CEROS = "%06d";
 	public static final String NOMBRE_DIR_PIEZAS = "Piezas";
 	public static final String PREFIJO = "PZ";
 	private long tiempoPiezaActual = 0;
@@ -29,14 +30,16 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 	private long timeEvento;
 	private boolean frameInicial = true;
 	private int frameRate;
+	private long nanosegundosPrevios = 0;
 
 	public static void main(String[] args) {
 		DivisorDeVideoMejorado coddv = new DivisorDeVideoMejorado();
-		coddv.dividirVideo("/home/ale/Videos-SOB/Videos-02", "Tetris.mp4");
+		coddv.dividirVideo("/home/ale/TestVideos", "Cats.mp4");
 	}
-	
+
 	/**
 	 * Devuelve el framerate del video
+	 * 
 	 * @return El framerate del video
 	 */
 	public int getFramerate() {
@@ -45,14 +48,16 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 
 	/**
 	 * Devuelve la cantidad de piezas en las que se dividio el video
+	 * 
 	 * @return La cantidad de partes del video
 	 */
 	public long getCantPiezas() {
 		return cantPiezas;
 	}
-	
+
 	/**
 	 * Devuelve el directorio que contiene las piezas del video
+	 * 
 	 * @return La url de la carpeta con las piezas del video
 	 */
 	public String getDirPiezas() {
@@ -60,7 +65,8 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 	}
 
 	/**
-	 * Usado internamente para obtener la duracion del video y la cantidad de piezas
+	 * Usado internamente para obtener la duracion del video y la cantidad de
+	 * piezas
 	 */
 	private void establecerCantidades() {
 		IMediaReader r = ToolFactory.makeReader(dirCompletaArchivo);
@@ -77,8 +83,11 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 
 	/**
 	 * Divide al video en distintas piezas mas pequeñas
-	 * @param dirArchivo URL del directorio del video
-	 * @param nombreArchivo Nombre del video
+	 * 
+	 * @param dirArchivo
+	 *            URL del directorio del video
+	 * @param nombreArchivo
+	 *            Nombre del video
 	 */
 	public void dividirVideo(String directorioArchivo, String nombreArchivo) {
 		dirCompletaArchivo = directorioArchivo + "/" + nombreArchivo;
@@ -89,10 +98,10 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 		System.out.println(directorioArchivo);
 		System.out.println(nombreArchivo);
 		System.out.println(dirPiezas);
-		System.out.println(dirPiezas + "/" + PREFIJO + "-" + numPiezaActual + "-" + nombreArchivo);
+		System.out.println(dirPiezas + "/" + PREFIJO + "-" + String.format(PADDING_CEROS, numPiezaActual) + "-" + nombreArchivo);
 		establecerCantidades();
 		reader = ToolFactory.makeReader(dirCompletaArchivo);
-		writer = ToolFactory.makeWriter(dirPiezas + "/" + PREFIJO + "-" + numPiezaActual + "-" + nombreArchivo);
+		writer = ToolFactory.makeWriter(dirPiezas + "/" + PREFIJO + "-" + String.format(PADDING_CEROS, numPiezaActual) + "-" + nombreArchivo);
 		reader.addListener(this);
 		while (reader.readPacket() == null) {
 		}
@@ -101,7 +110,9 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 
 	/**
 	 * Usado internamente para dividir el video
-	 * @param event Evento recibido
+	 * 
+	 * @param event
+	 *            Evento recibido
 	 */
 	@Override
 	public void onVideoPicture(IVideoPictureEvent event) {
@@ -112,15 +123,21 @@ public class DivisorDeVideoMejorado extends MediaToolAdapter {
 				frameInicial = false;
 			}
 			timeEvento = event.getTimeStamp(TimeUnit.MILLISECONDS);
+			if (event.getTimeStamp() - nanosegundosPrevios < 0) {
+				imagen.setTimeStamp(0);
+			} else {
+				imagen.setTimeStamp(event.getTimeStamp() - nanosegundosPrevios);
+			}
 			writer.encodeVideo(0, imagen);
 			writer.flush();
 			tiempoPiezaActual = timeEvento - timeUltimoCorte;
 			System.out.println(tiempoPiezaActual);
 			if (tiempoPiezaActual >= DURACION_MILISEG_PIEZA) {
 				timeUltimoCorte = timeEvento;
+				nanosegundosPrevios = event.getTimeStamp();
 				writer.close();
 				numPiezaActual++;
-				writer = ToolFactory.makeWriter(dirPiezas + "/" + PREFIJO + "-" + numPiezaActual + "-" + nombreArchivo);
+				writer = ToolFactory.makeWriter(dirPiezas + "/" + PREFIJO + "-" + String.format(PADDING_CEROS, numPiezaActual) + "-" + nombreArchivo);
 				frameInicial = true;
 			}
 		} else {
